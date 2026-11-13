@@ -1,5 +1,6 @@
 # test_game.py
-# Tests for the Game class.
+# Tests for the Game parent class. These are the rules that the manual
+# game and the automated game both share.
 
 import pytest
 
@@ -15,7 +16,7 @@ def empty_the_board(game):
                 game.board.set_cell(row, col, EMPTY)
 
 
-# User Story 1 and 2: Choose board size and type, start a new game
+# User Story 1 and 3: Choose board size and type, start a new game
 class TestNewGame:
     def test_default_game_is_english_7(self):
         game = Game()
@@ -50,7 +51,7 @@ class TestNewGame:
         assert game.size == 5
 
 
-# User Story 3: Making a move
+# User Story 4 and 6: Making a move (same rules for both modes)
 class TestGameMoves:
     def test_move_adds_to_move_count(self):
         game = Game()
@@ -63,7 +64,7 @@ class TestGameMoves:
         assert game.moves == 0
 
 
-# User Story 4: Checking the end of the game
+# User Story 5 and 7: Checking the end of the game
 class TestEndOfGame:
     def test_game_not_over_at_start(self):
         assert Game().is_game_over() is False

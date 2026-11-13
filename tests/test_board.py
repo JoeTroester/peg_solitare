@@ -3,6 +3,8 @@
 
 import pytest
 
+import random
+
 from game.board import EMPTY, INVALID, PEG, DiamondBoard, EnglishBoard, HexagonBoard
 
 
@@ -40,7 +42,7 @@ class TestBoardType:
         assert board.count_holes() == 37
 
 
-# User Story 2: Start a new game
+# User Story 3: Start a new game
 class TestStartingBoard:
     def test_middle_starts_empty(self):
         for board in [EnglishBoard(7), DiamondBoard(7), HexagonBoard(7)]:
@@ -48,7 +50,7 @@ class TestStartingBoard:
             assert board.count_pegs() == board.count_holes() - 1
 
 
-# User Story 3: Making a move
+# User Story 4: Make a move in a manual game
 class TestBoardMoves:
     def test_valid_move(self):
         board = EnglishBoard(7)
@@ -89,3 +91,37 @@ class TestBoardMoves:
         board = EnglishBoard(7)
         board.set_cell(4, 4, EMPTY)
         assert board.make_move(2, 2, 4, 4) is False
+
+
+# User Story 6: Make a move in an automated game (the list the computer picks from)
+class TestAllMoves:
+    def test_all_moves_at_start_of_english_board(self):
+        # at the start there are 4 pegs that can jump into the middle
+        moves = EnglishBoard(7).get_all_moves()
+        assert len(moves) == 4
+        assert (1, 3, 3, 3) in moves
+
+    def test_no_moves_on_empty_board(self):
+        board = EnglishBoard(7)
+        for row in range(7):
+            for col in range(7):
+                if board.get_cell(row, col) == PEG:
+                    board.set_cell(row, col, EMPTY)
+        assert board.get_all_moves() == []
+
+
+# User Story 8: Randomize the state of the board
+class TestRandomizePegs:
+    def test_randomize_keeps_peg_count_and_shape(self):
+        for board in [EnglishBoard(7), DiamondBoard(7), HexagonBoard(7)]:
+            pegs = board.count_pegs()
+            holes = board.count_holes()
+            board.randomize_pegs(random.Random(1))
+            assert board.count_pegs() == pegs
+            assert board.count_holes() == holes  # no new or missing holes
+
+    def test_randomize_changes_the_layout(self):
+        board = EnglishBoard(7)
+        before = [row[:] for row in board.grid]
+        board.randomize_pegs(random.Random(1))
+        assert board.grid != before

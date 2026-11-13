@@ -4,6 +4,8 @@
 # Each board type is a child class that only changes which spots are on
 # the board and which directions a peg can jump.
 
+import random
+
 PEG = "O"
 EMPTY = "."
 INVALID = " "  # spot that is not part of the board
@@ -90,6 +92,30 @@ class Board:
             if self.is_valid_move(row, col, to_row, to_col):
                 moves.append((to_row, to_col))
         return moves
+
+    def get_all_moves(self):
+        # every legal jump on the whole board as (from_row, from_col, to_row, to_col)
+        # the computer player picks from this list in an automated game
+        moves = []
+        for row in range(self.size):
+            for col in range(self.size):
+                for to_row, to_col in self.get_moves_from(row, col):
+                    moves.append((row, col, to_row, to_col))
+        return moves
+
+    def randomize_pegs(self, rng=random):
+        # Mix up the board. The number of pegs stays the same, they just get
+        # put in random holes. Spots that aren't part of the board stay that way.
+        holes = []
+        for row in range(self.size):
+            for col in range(self.size):
+                if self.grid[row][col] != INVALID:
+                    holes.append((row, col))
+        peg_spots = rng.sample(holes, self.count_pegs())
+        for row, col in holes:
+            self.grid[row][col] = EMPTY
+        for row, col in peg_spots:
+            self.grid[row][col] = PEG
 
     def has_moves_left(self):
         for row in range(self.size):
